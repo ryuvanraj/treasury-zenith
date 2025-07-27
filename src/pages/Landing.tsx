@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Wallet, Shield, Zap, Github, MessageCircle, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useWallet } from "@/hooks/useWallet";
 
 const Landing = () => {
+  const { isConnected, connectWallet, isConnecting } = useWallet();
   return (
     <div className="min-h-screen hero-gradient">
       {/* Navigation */}
@@ -40,15 +42,26 @@ const Landing = () => {
               AI-Powered. MEV-Resistant. Powered by OKX DEX.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link to="/dashboard">
-                <Button className="glow-button w-full sm:w-auto">
+              {isConnected ? (
+                <Link to="/dashboard">
+                  <Button className="glow-button w-full sm:w-auto">
+                    <Wallet className="mr-2 h-5 w-5" />
+                    Launch App
+                  </Button>
+                </Link>
+              ) : (
+                <Button 
+                  className="glow-button w-full sm:w-auto"
+                  onClick={connectWallet}
+                  disabled={isConnecting}
+                >
                   <Wallet className="mr-2 h-5 w-5" />
-                  Connect Wallet
+                  {isConnecting ? "Connecting..." : "Connect Wallet"}
                 </Button>
-              </Link>
+              )}
               <Link to="/dashboard">
                 <Button variant="outline" className="bg-secondary/50 backdrop-blur-sm border-border/50 w-full sm:w-auto">
-                  Launch App
+                  View Demo
                 </Button>
               </Link>
             </div>
