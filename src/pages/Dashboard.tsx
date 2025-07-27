@@ -10,6 +10,69 @@ const Dashboard = () => {
       <DashboardNavigation />
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Top Metrics Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="glow-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Value Locked</p>
+                  <p className="text-2xl font-bold">$1,234,567</p>
+                  <p className="text-xs text-success">+12.5% this month</p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glow-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">24h PnL</p>
+                  <p className="text-2xl font-bold text-success">+$8,420</p>
+                  <p className="text-xs text-success">+0.68%</p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-success" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glow-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Positions</p>
+                  <p className="text-2xl font-bold">2</p>
+                  <p className="text-xs text-muted-foreground">ETH, USDC</p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-accent" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glow-card">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Rebalances</p>
+                  <p className="text-2xl font-bold">47</p>
+                  <p className="text-xs text-muted-foreground">Last 30 days</p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-chart-1/20 flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-chart-1" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Treasury Overview - Larger Card */}
           <div className="lg:col-span-2">
@@ -48,10 +111,12 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-3">
                           <div className="w-4 h-4 rounded-full bg-chart-1"></div>
                           <span className="font-medium">ETH</span>
+                          <Badge variant="outline" className="text-xs">Target: 50%</Badge>
                         </div>
                         <div className="text-right">
                           <div className="font-semibold">70%</div>
                           <div className="text-sm text-muted-foreground">$864,397</div>
+                          <div className="text-xs text-orange-400">+20% over target</div>
                         </div>
                       </div>
 
@@ -59,11 +124,23 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-3">
                           <div className="w-4 h-4 rounded-full bg-chart-2"></div>
                           <span className="font-medium">USDC</span>
+                          <Badge variant="outline" className="text-xs">Target: 50%</Badge>
                         </div>
                         <div className="text-right">
                           <div className="font-semibold">30%</div>
                           <div className="text-sm text-muted-foreground">$370,170</div>
+                          <div className="text-xs text-red-400">-20% under target</div>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-border/30">
+                      <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                        <span>Rebalance Needed</span>
+                        <span className="text-orange-400">High Priority</span>
+                      </div>
+                      <div className="w-full bg-secondary/30 rounded-full h-2 mb-4">
+                        <div className="bg-orange-400 h-2 rounded-full" style={{ width: '75%' }}></div>
                       </div>
                     </div>
 
@@ -71,6 +148,41 @@ const Dashboard = () => {
                       <Zap className="mr-2 h-4 w-4" />
                       Trigger Rebalance
                     </Button>
+                  </div>
+                </div>
+
+                {/* Additional Treasury Details */}
+                <div className="pt-6 border-t border-border/30">
+                  <h3 className="text-lg font-semibold mb-4">Detailed Holdings</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">ETH Balance</span>
+                        <span className="font-mono">247.12 ETH</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">ETH Price</span>
+                        <span className="font-mono">$3,500.00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">24h Change</span>
+                        <span className="font-mono text-success">+2.4%</span>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">USDC Balance</span>
+                        <span className="font-mono">370,170 USDC</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">USDC Price</span>
+                        <span className="font-mono">$1.00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">24h Change</span>
+                        <span className="font-mono">0.0%</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
