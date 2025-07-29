@@ -10,7 +10,7 @@ import SwapSimulation from "./pages/SwapSimulation";
 import ActivityLog from "./pages/ActivityLog";
 import Governance from "./pages/Governance";
 import NotFound from "./pages/NotFound";
-
+import About from "./pages/About";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -26,6 +26,7 @@ const App = () => (
           <Route path="/swap" element={<SwapSimulation />} />
           <Route path="/activity" element={<ActivityLog />} />
           <Route path="/governance" element={<Governance />} />
+          <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
