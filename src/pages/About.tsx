@@ -93,7 +93,7 @@ const About = () => {
               <div>
                 <div className="text-lg font-semibold">Rohit Amal Raj</div>
                 <a
-                  href="https://github.com/GithubRohitamalraj"
+                  href="https://github.com/Rohitamalraj"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground text-sm hover:text-blue-600 transition-colors underline"

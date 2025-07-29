@@ -4,85 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, AlertCircle } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
-<<<<<<< HEAD
 
 const SwapSimulation = () => {
-=======
-import { useState, useEffect, useMemo } from "react";
-
-interface TreasuryState {
-  eth: {
-    amount: number;
-    percentage: number;
-  };
-  usdc: {
-    amount: number;
-    percentage: number;
-  };
-}
-
-const SwapSimulation = () => {
-  // State for current treasury allocation
-  const [treasuryState, setTreasuryState] = useState<TreasuryState>({
-    eth: {
-      amount: 1111.2,
-      percentage: 90
-    },
-    usdc: {
-      amount: 123457,
-      percentage: 10
-    }
-  });
-
-  // State for swap parameters
-  const [swapRate, setSwapRate] = useState<number>(3500); // USDC per ETH
-  const [slippage, setSlippage] = useState<number>(0.5); // 0.5%
-  const [networkFee, setNetworkFee] = useState<number>(0.002); // ETH
-  const [dexFee, setDexFee] = useState<number>(0.1); // 0.1%
-
-  // Calculate imbalance and proposed swap
-  const calculations = useMemo(() => {
-    const targetUsdcPercentage = 30; // Target 30% USDC
-    const currentUsdcPercentage = treasuryState.usdc.percentage;
-    const imbalancePercentage = targetUsdcPercentage - currentUsdcPercentage;
-    
-    // Calculate ETH amount to swap
-    const totalValueInEth = treasuryState.eth.amount + (treasuryState.usdc.amount / swapRate);
-    const ethToSwap = (imbalancePercentage / 100) * totalValueInEth;
-    
-    // Calculate USDC to receive
-    const usdcToReceive = ethToSwap * swapRate;
-    
-    // Calculate minimum received with slippage
-    const minimumReceived = usdcToReceive * (1 - slippage / 100);
-    
-    // Calculate price impact
-    const priceImpact = (usdcToReceive / (ethToSwap * swapRate) - 1) * 100;
-
-    return {
-      ethToSwap: Math.abs(ethToSwap).toFixed(1),
-      usdcToReceive: Math.abs(usdcToReceive).toFixed(0),
-      minimumReceived: Math.abs(minimumReceived).toFixed(0),
-      imbalancePercentage: imbalancePercentage.toFixed(0),
-      priceImpact: priceImpact.toFixed(2)
-    };
-  }, [treasuryState, swapRate, slippage]);
-
-  // Simulate fetching live data
-  useEffect(() => {
-    const fetchLiveData = async () => {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Update with mock live data
-      setSwapRate(3500 + Math.random() * 100);
-      setPriceImpact(0.02 + Math.random() * 0.1);
-    };
-
-    const interval = setInterval(fetchLiveData, 10000);
-    return () => clearInterval(interval);
-  }, []);
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
   return (
     <div className="min-h-screen bg-background">
       <DashboardNavigation />
@@ -106,33 +29,19 @@ const SwapSimulation = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-<<<<<<< HEAD
                 <div className="text-2xl font-bold mb-2">90% ETH, 10% USDC</div>
-=======
-                <div className="text-2xl font-bold mb-2">
-                  {treasuryState.eth.percentage}% ETH, {treasuryState.usdc.percentage}% USDC
-                </div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                 <div className="text-sm text-muted-foreground">Current asset allocation in the treasury</div>
               </div>
 
               <div className="flex items-center justify-center">
                 <div className="relative w-40 h-40">
                   <div className="absolute inset-0 rounded-full" style={{
-<<<<<<< HEAD
                     background: `conic-gradient(from 0deg, hsl(var(--chart-1)) 0deg 324deg, hsl(var(--chart-2)) 324deg 360deg)`
-=======
-                    background: `conic-gradient(from 0deg, hsl(var(--chart-1)) 0deg ${treasuryState.eth.percentage * 3.6}deg, hsl(var(--chart-2)) ${treasuryState.eth.percentage * 3.6}deg 360deg)`
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                   }}></div>
                   <div className="absolute inset-4 rounded-full bg-card flex items-center justify-center">
                     <div className="text-center">
                       <div className="text-lg font-bold">Imbalanced</div>
-<<<<<<< HEAD
                       <div className="text-xs text-warning">-20% USDC</div>
-=======
-                      <div className="text-xs text-warning">{calculations.imbalancePercentage}% USDC</div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                     </div>
                   </div>
                 </div>
@@ -171,13 +80,7 @@ const SwapSimulation = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-<<<<<<< HEAD
                 <div className="text-2xl font-bold mb-2 text-primary">Swap 1.2 ETH → 4200 USDC</div>
-=======
-                <div className="text-2xl font-bold mb-2 text-primary">
-                  Swap {calculations.ethToSwap} ETH → {calculations.usdcToReceive} USDC
-                </div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                 <div className="text-sm text-muted-foreground">Proposed swap based on current imbalance</div>
               </div>
 
@@ -185,11 +88,7 @@ const SwapSimulation = () => {
                 <div className="text-center">
                   <h3 className="font-semibold mb-4">Swap Simulation</h3>
                   <div className="text-sm text-muted-foreground mb-2">
-<<<<<<< HEAD
                     Simulate upcoming swaps based on the current imbalance.
-=======
-                    Live swap simulation based on current market rates.
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                   </div>
                 </div>
 
@@ -198,11 +97,7 @@ const SwapSimulation = () => {
                     <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-chart-1 flex items-center justify-center">
                       <span className="text-white font-bold text-xs">ETH</span>
                     </div>
-<<<<<<< HEAD
                     <div className="text-sm font-medium">1.2 ETH</div>
-=======
-                    <div className="text-sm font-medium">{calculations.ethToSwap} ETH</div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                   </div>
                   
                   <ArrowRight className="h-6 w-6 text-primary" />
@@ -211,11 +106,7 @@ const SwapSimulation = () => {
                     <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-chart-2 flex items-center justify-center">
                       <span className="text-white font-bold text-xs">USDC</span>
                     </div>
-<<<<<<< HEAD
                     <div className="text-sm font-medium">4200 USDC</div>
-=======
-                    <div className="text-sm font-medium">{calculations.usdcToReceive} USDC</div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                   </div>
                 </div>
               </div>
@@ -256,30 +147,18 @@ const SwapSimulation = () => {
             <div className="grid md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">Swap Rate</div>
-<<<<<<< HEAD
                 <div className="text-2xl font-bold font-mono">1 ETH = 3500 USDC</div>
-=======
-                <div className="text-2xl font-bold font-mono">1 ETH = {swapRate.toFixed(0)} USDC</div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
               </div>
               
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">Minimum Received</div>
-<<<<<<< HEAD
                 <div className="text-2xl font-bold font-mono">4158 USDC</div>
-=======
-                <div className="text-2xl font-bold font-mono">{calculations.minimumReceived} USDC</div>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
               </div>
               
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">Slippage</div>
                 <div className="text-2xl font-bold">
-<<<<<<< HEAD
                   <Badge variant="secondary" className="text-lg px-3 py-1">0.5%</Badge>
-=======
-                  <Badge variant="secondary" className="text-lg px-3 py-1">{slippage}%</Badge>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                 </div>
               </div>
             </div>
@@ -289,7 +168,6 @@ const SwapSimulation = () => {
             <div className="bg-muted/30 rounded-lg p-4 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Network Fee</span>
-<<<<<<< HEAD
                 <span className="font-mono">~0.002 ETH</span>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -299,19 +177,6 @@ const SwapSimulation = () => {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Price Impact</span>
                 <span className="font-mono text-success">+0.02%</span>
-=======
-                <span className="font-mono">~{networkFee} ETH</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">DEX Fee</span>
-                <span className="font-mono">{dexFee}%</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Price Impact</span>
-                <span className={`font-mono ${Number(calculations.priceImpact) > 0 ? 'text-success' : 'text-warning'}`}>
-                  {calculations.priceImpact}%
-                </span>
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
               </div>
             </div>
 
@@ -326,43 +191,10 @@ const SwapSimulation = () => {
             </div>
 
             <div className="flex space-x-4 mt-8">
-<<<<<<< HEAD
               <Button className="flex-1 glow-button">
                 Approve & Execute
               </Button>
               <Button variant="outline" className="flex-1">
-=======
-              <Button 
-                className="flex-1 glow-button"
-                onClick={async () => {
-                  // Here you would integrate with wallet and DEX
-                  const ethToSwap = Number(calculations.ethToSwap);
-                  const usdcToReceive = Number(calculations.usdcToReceive);
-                  
-                  // Update treasury state after successful swap
-                  setTreasuryState(prev => ({
-                    eth: {
-                      amount: prev.eth.amount - ethToSwap,
-                      percentage: 70
-                    },
-                    usdc: {
-                      amount: prev.usdc.amount + usdcToReceive,
-                      percentage: 30
-                    }
-                  }));
-                }}
-              >
-                Approve & Execute
-              </Button>
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => {
-                  // Refresh rates and calculations
-                  setSwapRate(prev => prev + Math.random() * 50 - 25);
-                }}
-              >
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                 Simulate Only
               </Button>
             </div>
@@ -373,12 +205,4 @@ const SwapSimulation = () => {
   );
 };
 
-<<<<<<< HEAD
 export default SwapSimulation;
-=======
-export default SwapSimulation;
-
-function setPriceImpact(arg0: number) {
-  throw new Error("Function not implemented.");
-}
->>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
