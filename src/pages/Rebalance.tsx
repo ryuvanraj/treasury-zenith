@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { useState } from "react";
+>>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,6 +13,26 @@ import { AlertTriangle, Settings } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
 
 const Rebalance = () => {
+<<<<<<< HEAD
+=======
+  const [ethAllocation, setEthAllocation] = useState(50); // Start with 50%
+  const [usdcAllocation, setUsdcAllocation] = useState(50); // Start with 50%
+
+  const handleEthChange = (value: number[]) => {
+    const newEthValue = value[0];
+    console.log("ETH Slider Changed:", newEthValue); // Debugging
+    setEthAllocation(newEthValue);
+    setUsdcAllocation(100 - newEthValue); // Adjust USDC allocation to ensure total is 100%
+  };
+
+  const handleUsdcChange = (value: number[]) => {
+    const newUsdcValue = value[0];
+    console.log("USDC Slider Changed:", newUsdcValue); // Debugging
+    setUsdcAllocation(newUsdcValue);
+    setEthAllocation(100 - newUsdcValue); // Adjust ETH allocation to ensure total is 100%
+  };
+
+>>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
   return (
     <div className="min-h-screen bg-background">
       <DashboardNavigation />
@@ -35,6 +59,7 @@ const Rebalance = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="eth-allocation">ETH Allocation</Label>
+<<<<<<< HEAD
                   <span className="text-sm font-mono">50%</span>
                 </div>
                 <Slider
@@ -43,6 +68,17 @@ const Rebalance = () => {
                   max={100}
                   step={1}
                   className="w-full"
+=======
+                  <span className="text-sm font-mono">{ethAllocation}%</span>
+                </div>
+                <Slider
+                  id="eth-allocation"
+                  value={[ethAllocation]} // Controlled value
+                  max={100}
+                  step={1}
+                  className="w-full"
+                  onValueChange={handleEthChange} // Updates state
+>>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                 />
               </div>
 
@@ -50,6 +86,7 @@ const Rebalance = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="usdc-allocation">USDC Allocation</Label>
+<<<<<<< HEAD
                   <span className="text-sm font-mono">50%</span>
                 </div>
                 <Slider
@@ -58,6 +95,17 @@ const Rebalance = () => {
                   max={100}
                   step={1}
                   className="w-full"
+=======
+                  <span className="text-sm font-mono">{usdcAllocation}%</span>
+                </div>
+                <Slider
+                  id="usdc-allocation"
+                  value={[usdcAllocation]} // Controlled value
+                  max={100}
+                  step={1}
+                  className="w-full"
+                  onValueChange={handleUsdcChange} // Updates state
+>>>>>>> e42d4aaebc44e41bd6afd719f370e4a7aae171f0
                 />
               </div>
 
