@@ -18,10 +18,10 @@ const Landing = () => {
           <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
             Dashboard
           </Link>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-            Docs
+          <a href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+            About
           </a>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+          <a href="https://github.com/ryuvanraj/treasury-zenith" className="text-muted-foreground hover:text-foreground transition-colors">
             GitHub
           </a>
         </div>
@@ -157,13 +157,12 @@ const Landing = () => {
       <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-border/30">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-6 mb-4 md:mb-0">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Docs</a>
-            <a href="#" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/about" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
+            <a href="https://github.com/ryuvanraj/treasury-zenith" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
               <Github className="h-4 w-4" />
               <span>GitHub</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
+            <a href="https://discord.com/invite/qFfvVB5KTw" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
               <MessageCircle className="h-4 w-4" />
               <span>Discord</span>
             </a>
