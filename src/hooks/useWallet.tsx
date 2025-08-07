@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { useToast } from './use-toast';
@@ -12,12 +13,15 @@ interface WalletState {
 
 export const useWallet = () => {
   const { toast } = useToast();
-  const [walletState, setWalletState] = useState<WalletState>({
-    isConnected: false,
-    address: null,
-    balance: null,
-    network: null,
-    isConnecting: false,
+  const [walletState, setWalletState] = useState<WalletState>(() => {
+    const savedState = localStorage.getItem('walletState');
+    return savedState ? JSON.parse(savedState) : {
+      isConnected: false,
+      address: null,
+      balance: null,
+      network: null,
+      isConnecting: false,
+    };
   });
 
   const connectWallet = useCallback(async () => {
@@ -67,6 +71,7 @@ export const useWallet = () => {
   }, [toast]);
 
   const disconnectWallet = useCallback(() => {
+    localStorage.removeItem('walletState');
     setWalletState({
       isConnected: false,
       address: null,
@@ -96,8 +101,19 @@ export const useWallet = () => {
         }
       };
 
-      const handleChainChanged = () => {
-        window.location.reload();
+      const handleChainChanged = async () => {
+        if (window.ethereum) {
+          try {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const network = await provider.getNetwork();
+            setWalletState(prev => ({
+              ...prev,
+              network: network.name
+            }));
+          } catch (error) {
+            console.error('Error updating chain:', error);
+          }
+        }
       };
 
       window.ethereum.on('accountsChanged', handleAccountsChanged);
@@ -109,6 +125,11 @@ export const useWallet = () => {
       };
     }
   }, [walletState.address, connectWallet, disconnectWallet]);
+
+  // Persist wallet state
+  useEffect(() => {
+    localStorage.setItem('walletState', JSON.stringify(walletState));
+  }, [walletState]);
 
   // Check if already connected on mount
   useEffect(() => {
