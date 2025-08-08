@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -8,23 +8,53 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, Settings } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { useState, useEffect } from "react";
+
+const LOCAL_STORAGE_KEY = "treasury_allocations";
 
 const Rebalance = () => {
-  const [ethAllocation, setEthAllocation] = useState(50); // Start with 50%
-  const [usdcAllocation, setUsdcAllocation] = useState(50); // Start with 50%
+  const [ethAllocation, setEthAllocation] = useState(50);
+  const [usdcAllocation, setUsdcAllocation] = useState(50);
+  const [saving, setSaving] = useState(false); // Add loading state
+  const [saveSuccess, setSaveSuccess] = useState(false); // Add success state
+
+  
+
+  useEffect(() => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored) {
+      try {
+        const { eth, usdc } = JSON.parse(stored);
+        setEthAllocation(eth);
+        setUsdcAllocation(usdc);
+      } catch {}
+    }
+  }, []);
 
   const handleEthChange = (value: number[]) => {
     const newEthValue = value[0];
-    console.log("ETH Slider Changed:", newEthValue); // Debugging
     setEthAllocation(newEthValue);
-    setUsdcAllocation(100 - newEthValue); // Adjust USDC allocation to ensure total is 100%
+    setUsdcAllocation(100 - newEthValue);
   };
 
   const handleUsdcChange = (value: number[]) => {
     const newUsdcValue = value[0];
-    console.log("USDC Slider Changed:", newUsdcValue); // Debugging
     setUsdcAllocation(newUsdcValue);
-    setEthAllocation(100 - newUsdcValue); // Adjust ETH allocation to ensure total is 100%
+    setEthAllocation(100 - newUsdcValue);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveSuccess(false);
+    // Save to localStorage
+    localStorage.setItem(
+      LOCAL_STORAGE_KEY,
+      JSON.stringify({ eth: ethAllocation, usdc: usdcAllocation })
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    setSaving(false);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2000);
   };
 
   return (
@@ -223,10 +253,13 @@ const Rebalance = () => {
         </Card>
 
         {/* Save Button */}
-        <div className="mt-8 flex justify-end">
-          <Button className="glow-button">
-            Save Strategy
+        <div className="mt-8 flex flex-col items-end space-y-2">
+          <Button className="glow-button" onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Strategy"}
           </Button>
+          {saveSuccess && (
+            <span className="text-green-600 text-sm font-medium">Strategy saved!</span>
+          )}
         </div>
       </div>
     </div>

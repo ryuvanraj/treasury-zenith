@@ -3,12 +3,118 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Zap, ExternalLink, TrendingUp } from "lucide-react";
 import DashboardNavigation from "@/components/DashboardNavigation";
+import { useEffect, useState } from "react";
+import { useAllocation } from "@/context/AllocationContext";
 
+const LOCAL_STORAGE_KEY = "treasury_allocations";
 const Dashboard = () => {
+  const [account, setAccount] = useState<string | null>(null);
+  const [ethBalance, setEthBalance] = useState<string>("0.00");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [ethPrice, setEthPrice] = useState<number>(0);
+
+  // Add target allocation state (default to 50/50, update from rebalance page)
+  const [targetEthPercent, setTargetEthPercent] = useState<number>(50);
+  const [targetUsdcPercent, setTargetUsdcPercent] = useState<number>(50);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored) {
+      try {
+        const { eth, usdc } = JSON.parse(stored);
+        setTargetEthPercent(eth);
+        setTargetUsdcPercent(usdc);
+      } catch {}
+    }
+  }, []);
+
+  // Fetch real-time ETH price in USD
+  const fetchEthPrice = async () => {
+    try {
+      const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+      const data = await res.json();
+      setEthPrice(data.ethereum.usd);
+    } catch (err) {
+      console.error("Error fetching ETH price:", err);
+    }
+  };
+
+  // Connect to MetaMask and get account
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        setIsLoading(true);
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        setAccount(accounts[0]);
+        setIsLoading(false);
+      } catch (err) {
+        setIsLoading(false);
+        console.error("MetaMask connection error:", err);
+      }
+    }
+  };
+
+  // Fetch ETH balance from Sepolia
+  const fetchEthBalance = async (address: string) => {
+    if (window.ethereum && address) {
+      try {
+        // Sepolia chainId is 0xaa36a7
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0xaa36a7" }],
+        });
+        const balance = await window.ethereum.request({
+          method: "eth_getBalance",
+          params: [address, "latest"],
+        });
+        // Convert balance from Wei to ETH
+        setEthBalance((parseInt(balance, 16) / 1e18).toFixed(4));
+      } catch (err) {
+        console.error("Error fetching ETH balance:", err);
+      }
+    }
+  };
+
+  // Connect and fetch balance on mount or when account changes
+  useEffect(() => {
+    connectWallet();
+    fetchEthPrice();
+    const priceInterval = setInterval(fetchEthPrice, 10000); // update price every 10s
+    return () => clearInterval(priceInterval);
+  }, []);
+
+  useEffect(() => {
+    if (account) {
+      fetchEthBalance(account);
+      // Poll for real-time updates every 10s
+      const interval = setInterval(() => fetchEthBalance(account), 10000);
+      return () => clearInterval(interval);
+    }
+  }, [account]);
+
+  // Calculate USD value of ETH balance
+  const ethBalanceUsd = (parseFloat(ethBalance) * ethPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Hardcoded USDC balance for demo (replace with live value if available)
+  const usdcBalance = 370170; // USDC balance in USD
+
+  // Calculate total portfolio value
+  const totalValue = parseFloat(ethBalanceUsd.replace(/,/g, "")) + usdcBalance;
+
+  // Calculate live percentages
+  const ethPercent = totalValue > 0 ? ((parseFloat(ethBalanceUsd.replace(/,/g, "")) / totalValue) * 100).toFixed(0) : "0";
+  const usdcPercent = totalValue > 0 ? ((usdcBalance / totalValue) * 100).toFixed(0) : "0";
+
+  // Example: update target allocation from rebalance page (replace with your logic)
+  // useEffect(() => {
+  //   // Fetch or receive new target allocation from rebalance page
+  //   setTargetEthPercent(newEthTarget);
+  //   setTargetUsdcPercent(newUsdcTarget);
+  // }, [newEthTarget, newUsdcTarget]);
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardNavigation />
-
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Top Metrics Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -16,9 +122,16 @@ const Dashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Value Locked</p>
-                  <p className="text-2xl font-bold">$1,234,567</p>
-                  <p className="text-xs text-success">+12.5% this month</p>
+                  <p className="text-sm text-muted-foreground">ETH Balance (Sepolia)</p>
+                  <p className="text-2xl font-bold">
+                    {isLoading ? "Loading..." : `${ethBalance} ETH`}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {isLoading ? "" : `≈ $${ethBalanceUsd} USD`}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {account ? `Wallet: ${account.slice(0, 6)}...${account.slice(-4)}` : "Not Connected"}
+                  </p>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-primary" />
@@ -89,14 +202,19 @@ const Dashboard = () => {
                 <div className="grid md:grid-cols-2 gap-8">
                   {/* Pie Chart */}
                   <div className="flex items-center justify-center">
-                    <div className="relative w-48 h-48">
-                      <div className="absolute inset-0 rounded-full" style={{
-                        background: `conic-gradient(from 0deg, hsl(var(--chart-1)) 0deg 252deg, hsl(var(--chart-2)) 252deg 360deg)`
-                      }}></div>
-                      <div className="absolute inset-4 rounded-full bg-card flex items-center justify-center">
+                    <div className="relative w-64 h-64">
+                      <div
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: `conic-gradient(from 0deg, hsl(var(--chart-1)) 0deg 252deg, hsl(var(--chart-2)) 252deg 360deg)`
+                        }}
+                      ></div>
+                      <div className="absolute inset-8 rounded-full bg-card flex items-center justify-center">
                         <div className="text-center">
-                          <div className="text-3xl font-bold">$1,234,567</div>
-                          <div className="text-sm text-muted-foreground">Total Value Locked</div>
+                          <div className="text-3xl font-bold">
+                            {isLoading ? "Loading..." : `$${ethBalanceUsd} USD`}
+                          </div>
+                          <div className="text-sm text-muted-foreground">ETH Balance (Sepolia)</div>
                         </div>
                       </div>
                     </div>
@@ -111,12 +229,18 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-3">
                           <div className="w-4 h-4 rounded-full bg-chart-1"></div>
                           <span className="font-medium">ETH</span>
-                          <Badge variant="outline" className="text-xs">Target: 50%</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Target: {targetEthPercent}%
+                          </Badge>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold">70%</div>
-                          <div className="text-sm text-muted-foreground">$864,397</div>
-                          <div className="text-xs text-orange-400">+20% over target</div>
+                          <div className="font-semibold">{ethPercent}%</div>
+                          <div className="text-sm text-muted-foreground">${ethBalanceUsd}</div>
+                          <div className={`text-xs ${parseInt(ethPercent) > targetEthPercent ? "text-orange-400" : "text-red-400"}`}>
+                            {parseInt(ethPercent) > targetEthPercent
+                              ? `+${parseInt(ethPercent) - targetEthPercent}% over target`
+                              : `${targetEthPercent - parseInt(ethPercent)}% under target`}
+                          </div>
                         </div>
                       </div>
 
@@ -124,12 +248,18 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-3">
                           <div className="w-4 h-4 rounded-full bg-chart-2"></div>
                           <span className="font-medium">USDC</span>
-                          <Badge variant="outline" className="text-xs">Target: 50%</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Target: {targetUsdcPercent}%
+                          </Badge>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold">30%</div>
-                          <div className="text-sm text-muted-foreground">$370,170</div>
-                          <div className="text-xs text-red-400">-20% under target</div>
+                          <div className="font-semibold">{usdcPercent}%</div>
+                          <div className="text-sm text-muted-foreground">${usdcBalance.toLocaleString()}</div>
+                          <div className={`text-xs ${parseInt(usdcPercent) < targetUsdcPercent ? "text-red-400" : "text-orange-400"}`}>
+                            {parseInt(usdcPercent) < targetUsdcPercent
+                              ? `-${targetUsdcPercent - parseInt(usdcPercent)}% under target`
+                              : `+${parseInt(usdcPercent) - targetUsdcPercent}% over target`}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -158,15 +288,25 @@ const Dashboard = () => {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">ETH Balance</span>
-                        <span className="font-mono">247.12 ETH</span>
+                        <span className="font-mono">
+                          {isLoading ? "Loading..." : `${ethBalance} ETH`}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">ETH Price</span>
-                        <span className="font-mono">$3,500.00</span>
+                        <span className="text-sm text-muted-foreground">ETH Value (USD)</span>
+                        <span className="font-mono">
+                          {isLoading ? "Loading..." : `$${ethBalanceUsd}`}
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">24h Change</span>
-                        <span className="font-mono text-success">+2.4%</span>
+                        <span className="text-sm text-muted-foreground">Wallet Address</span>
+                        <span className="font-mono text-xs break-all">
+                          {account ? account : "Not Connected"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Network</span>
+                        <span className="font-mono">Sepolia</span>
                       </div>
                     </div>
                     <div className="space-y-3">
